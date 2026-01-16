@@ -1,0 +1,19 @@
+name: Configuration Check
+on: [pull_request] # The robot wakes up for every PR
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Jsonnet
+        run: go install github.com/google/go-jsonnet/cmd/jsonnet@latest
+
+      - name: Setup Secrets
+        # We put a "secret" in the robot's memory to see if we can steal it
+        run: echo "MY_PRIVATE_TOKEN=SECRET_12345_GOLD_FOUND" >> $GITHUB_ENV
+
+      - name: Run Jsonnet
+        # The robot runs the code in the PR to "validate" it
+        run: ~/go/bin/jsonnet config.jsonnet
